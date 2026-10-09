@@ -1,3 +1,7 @@
+const supabaseUrl = "https://xbxgrruayehpxjeerdtd.supabase.co";
+const supabaseAnonKey = "sb_publishable_3M_bzrqRh_yNsnr7mh82tw_rlk_dsar";
+const sb = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
 const display = document.querySelector(".calculator input");
 const buttons = document.querySelectorAll(".calculator button");
 
@@ -90,7 +94,7 @@ function backspace() {
   render(tokens.join("") || "0");
 }
 
-function evaluate() {
+async function evaluate() {
   if (tokens.length === 0) return;
   // A trailing operator is meaningless when evaluating
   if (isOperator(tokens[tokens.length - 1])) return;
@@ -107,6 +111,10 @@ function evaluate() {
     render(value);
     tokens = [value];
     justEvaluated = true;
+
+    // NEW: save this calculation to your cloud database, then refresh the list
+    await saveHistory(expr, value);
+    await loadHistory();
   } catch {
     render("Error");
     tokens = [];
@@ -141,3 +149,33 @@ document.addEventListener("keydown", (e) => {
 });
 
 clearAll();
+
+async function saveHistory(expression, result) {
+  const { error } = await sb
+  .from("calculations")
+  .insert({ expression: expression, result: String(result) });
+
+  if (error) console.error("Save failed:", error);
+}
+
+async function loadHistory() {
+  const { data, error } = await sb
+  .from("calculations")
+  .select("expression, result")
+  .order("created_at", { ascending: false })
+  .limit(10);
+
+  if (error) return console.error("Load failed:", error);
+
+  const list = document.getElementById("history");
+  if (!list) return;
+  list.innerHTML = "";
+
+  data.forEach((row) => {
+    const li = document.createElement("li");
+    li.textContent = row.expression + " = " + row.result;
+    list.appendChild(li);
+  });
+}
+
+loadHistory(); // load once when page opens
