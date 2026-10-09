@@ -2,6 +2,13 @@ const supabaseUrl = "https://xbxgrruayehpxjeerdtd.supabase.co";
 const supabaseAnonKey = "sb_publishable_3M_bzrqRh_yNsnr7mh82tw_rlk_dsar";
 const sb = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
+// Each browser gets its own unguessable ID, remembered forever in localStorage
+let deviceId = localStorage.getItem("calculator-device-id");
+if (!deviceId) {
+  deviceId = crypto.randomUUID();
+  localStorage.setItem("calculator-device-id", deviceId);
+}
+
 const display = document.querySelector(".calculator input");
 const buttons = document.querySelectorAll(".calculator button");
 
@@ -112,7 +119,7 @@ async function evaluate() {
     tokens = [value];
     justEvaluated = true;
 
-    // NEW: save this calculation to your cloud database, then refresh the list
+    // Save this calculation to your cloud database, then refresh the list
     await saveHistory(expr, value);
     await loadHistory();
   } catch {
@@ -153,7 +160,7 @@ clearAll();
 async function saveHistory(expression, result) {
   const { error } = await sb
   .from("calculations")
-  .insert({ expression: expression, result: String(result) });
+  .insert({ expression: expression, result: String(result), device_id: deviceId });
 
   if (error) console.error("Save failed:", error);
 }
@@ -162,6 +169,7 @@ async function loadHistory() {
   const { data, error } = await sb
   .from("calculations")
   .select("expression, result")
+  .eq("device_id", deviceId) // only MY rows
   .order("created_at", { ascending: false })
   .limit(10);
 
