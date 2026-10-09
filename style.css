@@ -1,50 +1,81 @@
-*{
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    box-sizing: border-box ;
+* {
+margin: 0;
+padding: 0;
+font-family: sans-serif;
+box-sizing: border-box;
 }
-body{
+
+body {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(45deg,rgb(69, 66, 66),black)
-    
+    background: linear-gradient(45deg, rgb(69, 66, 66), black);
+    padding: 20px 0;
 }
-.calculator{
+
+.calculator {
     border: 1px solid darkgrey;
     padding: 24px;
-
     border-radius: 16px;
     background: transparent;
-    box-shadow: 0px 3px 15px rgba(115,125,135,0.5);
-input{
-        width: 320px;
-        border: none;
-        padding: 24px;
-        margin: 10px;
-        background: transparent;
-         box-shadow: 0px 3px 15px rgba(115,125,135,0.5);
-         font-size: 24px;
-         cursor: pointer;
-    }
-button{
+    box-shadow: 0px 3px 15px rgba(115, 125, 135, 0.5);
+}
+
+.calculator input {
+    width: 320px;
+    border: none;
+    padding: 24px;
+    margin: 10px 0;
+    background: transparent;
+    box-shadow: 0px 3px 15px rgba(115, 125, 135, 0.5);
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    text-align: right;
+}
+
+.calculator button {
     width: 60px;
     height: 60px;
     margin: 4px;
     border-radius: 50%;
     border: none;
     background-color: rgb(108, 105, 101);
-    
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
 }
-input::placeholder{
+
+.calculator button:hover {
+    background-color: rgb(130, 127, 122);
+}
+
+.calculator input::placeholder {
     color: rgb(227, 231, 231);
 }
 
+/* --- HISTORY LIST STYLING --- */
+#history {
+list-style: none;
+padding: 0;
+width: 320px;
+margin-top: 10px;
+max-height: 250px;
+overflow-y: auto;
+}
 
-
-
+#history li {
+color: white;
+padding: 10px 15px;
+margin-bottom: 8px;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 8px;
+font-family: monospace;
+font-size: 16px;
+text-align: right;
+border: 1px solid rgba(255, 255, 255, 0.2);
 }
